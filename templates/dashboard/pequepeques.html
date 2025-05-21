@@ -1,0 +1,234 @@
+{% extends "dashboard/dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid pt-4 px-4">
+  <div class="bg-secondary text-white rounded p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h6 class="mb-0">Lista de Pequepeques</h6>
+      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalPequepeque">
+        <i class="fas fa-plus"></i> Nuevo Pequepeque
+      </button>
+    </div>
+    <div class="table-responsive">
+      <table id="tabla-pequepeques" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Matrícula</th>
+            <th>Nombre</th>
+            <th>Capacidad</th>
+            <th>Material</th>
+            <th>Color</th>
+            <th>Propietario</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para nuevo pequepeque -->
+<div class="modal fade" id="modalPequepeque" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #1e1e2f; color: #ffffff;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="modalLabel">Registrar Pequepeque</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formPequepeque">
+          <div class="mb-3">
+            <label class="form-label">Matrícula</label>
+            <input type="text" class="form-control bg-dark text-white border-0" name="matricula" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control bg-dark text-white border-0" name="nombre">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Capacidad</label>
+            <input type="number" class="form-control bg-dark text-white border-0" name="capacidad">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Material</label>
+            <input type="text" class="form-control bg-dark text-white border-0" name="material">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Color</label>
+            <input type="text" class="form-control bg-dark text-white border-0" name="color">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Propietario</label>
+            <select class="form-select bg-dark text-white border-0 select2" name="propietario_id" required></select>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar Pequepeque -->
+<div class="modal fade" id="modalEditarPequepeque" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="formEditarPequepeque" style="background-color: #1e1e2f; color: #ffffff;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Editar Pequepeque</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id">
+        <div class="mb-3">
+          <label class="form-label">Matrícula</label>
+          <input type="text" class="form-control bg-dark text-white border-0" name="matricula" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control bg-dark text-white border-0" name="nombre">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Capacidad</label>
+          <input type="number" class="form-control bg-dark text-white border-0" name="capacidad">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Material</label>
+          <input type="text" class="form-control bg-dark text-white border-0" name="material">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Color</label>
+          <input type="text" class="form-control bg-dark text-white border-0" name="color">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Propietario</label>
+          <select class="form-select bg-dark text-white border-0 select2" name="propietario_id"></select>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+  async function cargarPropietarios(selector, parentModal) {
+    const res = await fetch('/api/propietarios/options');
+    const data = await res.json();
+    const select = document.querySelector(selector);
+    select.innerHTML = data.map(p => `<option value="${p.id}">${p.nombre} - DNI ${p.dni}</option>`).join("");
+    $(select).select2({ dropdownParent: $(parentModal), width: '100%' });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const tabla = $('#tabla-pequepeques').DataTable({
+      ajax: "/api/pequepeques",
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+      },
+      columns: [
+        { data: 'id' },
+        { data: 'matricula' },
+        { data: 'nombre' },
+        { data: 'capacidad' },
+        { data: 'material' },
+        { data: 'color' },
+        { data: null, render: d => `${d.propietario_nombre} - DNI ${d.propietario_dni}` },
+        {
+          data: null,
+          render: data => `
+            <button class='btn btn-sm btn-warning me-1' onclick='editarPequepeque(${JSON.stringify(data)})'><i class="fa fa-edit"></i></button>
+            <button class='btn btn-sm btn-danger' onclick='eliminarPequepeque(${data.id})'><i class="fa fa-trash"></i></button>`,
+          orderable: false
+        }
+      ]
+    });
+
+    $('#modalPequepeque').on('show.bs.modal', () => cargarPropietarios('#modalPequepeque select[name="propietario_id"]', '#modalPequepeque'));
+    $('#modalEditarPequepeque').on('show.bs.modal', () => cargarPropietarios('#modalEditarPequepeque select[name="propietario_id"]', '#modalEditarPequepeque'));
+
+    document.getElementById("formPequepeque").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(this).entries());
+      const resp = await fetch("/api/pequepeques", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      });
+      const res = await resp.json();
+      if (resp.ok && res.success) {
+        $('#modalPequepeque').modal('hide');
+        tabla.ajax.reload();
+        Swal.fire("¡Éxito!", "Pequepeque registrado correctamente.", "success");
+      } else {
+        Swal.fire("Error", res.message || "No se pudo registrar el pequepeque.", "error");
+      }
+    });
+
+    document.getElementById("formEditarPequepeque").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(this).entries());
+      const id = datos.id;
+      const resp = await fetch(`/api/pequepeques/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      });
+      const res = await resp.json();
+      if (resp.ok && res.message) {
+        $('#modalEditarPequepeque').modal('hide');
+        tabla.ajax.reload();
+        Swal.fire("¡Actualizado!", "Pequepeque editado correctamente.", "success");
+      } else {
+        Swal.fire("Error", res.error || "No se pudo editar.", "error");
+      }
+    });
+  });
+
+  function editarPequepeque(data) {
+    const form = document.getElementById("formEditarPequepeque");
+    for (const key in data) {
+      if (form[key]) form[key].value = data[key];
+    }
+    $('#modalEditarPequepeque').modal('show');
+    $('#modalEditarPequepeque select[name="propietario_id"]').val(data.propietario_id).trigger('change');
+  }
+
+  function eliminarPequepeque(id) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const resp = await fetch(`/api/pequepeques/${id}`, { method: "DELETE" });
+        const res = await resp.json();
+        if (resp.ok && res.message) {
+          $('#tabla-pequepeques').DataTable().ajax.reload();
+          Swal.fire("¡Eliminado!", "Registro eliminado.", "success");
+        } else {
+          Swal.fire("Error", res.error || "No se pudo eliminar.", "error");
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}

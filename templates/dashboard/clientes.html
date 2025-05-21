@@ -1,0 +1,240 @@
+{% extends "dashboard/dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid pt-4 px-4">
+  <div class="bg-secondary text-white rounded p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h6 class="mb-0">Clientes registrados</h6>
+      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalCliente">
+        <i class="fas fa-plus"></i> Nuevo Cliente
+      </button>
+    </div>
+    <div class="table-responsive">
+      <table id="tabla-clientes" class="table table-striped table-bordered" style="width:100%">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Procedencia</th>
+            <th>Acompañantes</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cliente -->
+<div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="modalClienteLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #1e1e2f; color: #ffffff;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="modalClienteLabel">Registrar nuevo cliente</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form id="form-cliente">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" class="form-control bg-dark text-white border-0" name="nombre" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">DNI</label>
+            <input type="text" class="form-control bg-dark text-white border-0" name="dni" maxlength="8" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Teléfono</label>
+            <input type="text" class="form-control bg-dark text-white border-0" name="telefono">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Correo</label>
+            <input type="email" class="form-control bg-dark text-white border-0" name="correo">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Procedencia</label>
+            <select class="form-select bg-dark text-white border-0" name="procedencia" required>
+              <option value="local">Local</option>
+              <option value="nacional">Nacional</option>
+              <option value="internacional">Internacional</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cantidad de acompañantes</label>
+            <input type="number" class="form-control bg-dark text-white border-0" name="acompanantes" min="0">
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar Cliente -->
+<div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-labelledby="modalEditarClienteLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #1e1e2f; color: #ffffff;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="modalEditarClienteLabel">Editar Cliente</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form id="form-editar-cliente">
+        <div class="modal-body">
+          <input type="hidden" name="id">
+          <div class="mb-3">
+            <label for="edit-nombre" class="form-label">Nombre</label>
+            <input type="text" id="edit-nombre" name="nombre" class="form-control bg-dark text-white border-0" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit-dni" class="form-label">DNI</label>
+            <input type="text" id="edit-dni" name="dni" class="form-control bg-dark text-white border-0" maxlength="8" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit-telefono" class="form-label">Teléfono</label>
+            <input type="text" id="edit-telefono" name="telefono" class="form-control bg-dark text-white border-0">
+          </div>
+          <div class="mb-3">
+            <label for="edit-correo" class="form-label">Correo</label>
+            <input type="email" id="edit-correo" name="correo" class="form-control bg-dark text-white border-0">
+          </div>
+          <div class="mb-3">
+            <label for="edit-procedencia" class="form-label">Procedencia</label>
+            <select id="edit-procedencia" name="procedencia" class="form-select bg-dark text-white border-0">
+              <option value="local">Local</option>
+              <option value="nacional">Nacional</option>
+              <option value="internacional">Internacional</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="edit-acompanantes" class="form-label">Acompañantes</label>
+            <input type="number" id="edit-acompanantes" name="acompanantes" class="form-control bg-dark text-white border-0">
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tabla = $('#tabla-clientes').DataTable({
+      ajax: "/api/clientes",
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+      },
+      columns: [
+        { data: 'id' },
+        { data: 'nombre' },
+        { data: 'dni' },
+        { data: 'telefono' },
+        { data: 'correo' },
+        { data: 'procedencia' },
+        { data: 'acompanantes' },
+        {
+          data: null,
+          render: function (data) {
+            return `
+              <button class='btn btn-sm btn-warning me-1' onclick='editarCliente(${JSON.stringify(data)})'><i class="fa fa-edit"></i></button>
+              <button class='btn btn-sm btn-danger' onclick='eliminarCliente(${data.id})'><i class="fa fa-trash"></i></button>
+            `;
+          },
+          orderable: false
+        }
+      ]
+    });
+
+    document.getElementById('form-cliente').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(this).entries());
+      if (!datos.nombre.trim() || !datos.dni.trim() || datos.dni.length !== 8 || isNaN(datos.dni)) {
+        return Swal.fire("Error", "Nombre y DNI válido son requeridos.", "warning");
+      }
+      datos.acompanantes = parseInt(datos.acompanantes || 0);
+      const resp = await fetch("/api/clientes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      });
+      const res = await resp.json();
+      if (resp.ok && res.message) {
+        $('#modalCliente').modal('hide');
+        tabla.ajax.reload();
+        Swal.fire("¡Éxito!", "Cliente registrado correctamente.", "success");
+      } else {
+        Swal.fire("Error", res.error || "No se pudo registrar el cliente.", "error");
+      }
+    });
+
+    document.getElementById('form-editar-cliente').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const id = formData.get('id');
+      const datos = Object.fromEntries(formData.entries());
+      datos.acompanantes = parseInt(datos.acompanantes || 0);
+      const resp = await fetch(`/api/clientes/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      });
+      const res = await resp.json();
+      if (resp.ok && res.message) {
+        $('#modalEditarCliente').modal('hide');
+        tabla.ajax.reload();
+        Swal.fire("¡Actualizado!", "Cliente modificado correctamente.", "success");
+      } else {
+        Swal.fire("Error", res.error || "No se pudo actualizar el cliente.", "error");
+      }
+    });
+  });
+
+  function editarCliente(data) {
+    const form = document.getElementById('form-editar-cliente');
+    for (const key in data) {
+      if (form[key]) form[key].value = data[key];
+    }
+    $('#modalEditarCliente').modal('show');
+  }
+
+  function eliminarCliente(id) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const resp = await fetch(`/api/clientes/${id}`, { method: "DELETE" });
+        const res = await resp.json();
+        if (resp.ok && res.message) {
+          $('#tabla-clientes').DataTable().ajax.reload();
+          Swal.fire("¡Eliminado!", "Cliente eliminado correctamente.", "success");
+        } else {
+          Swal.fire("Error", res.error || "No se pudo eliminar el cliente.", "error");
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,30 @@
+<!-- Sidebar Start -->
+<div class="sidebar pe-4 pb-3">
+    <nav class="navbar bg-secondary navbar-dark">
+        <a href="{{ url_for('dashboard.index') }}" class="navbar-brand mx-4 mb-3">
+            <h3 class="text-primary"><i class="fa fa-ship me-2"></i>Panel</h3>
+        </a>
+        <div class="d-flex align-items-center ms-4 mb-4">
+            <div class="position-relative">
+                <img class="rounded-circle" src="{{ url_for('static', filename='img-dashboard/user.jpg') }}" alt="" style="width: 40px; height: 40px;">
+                <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+            </div>
+            <div class="ms-3">
+                <h6 class="mb-0">{{ session['username'] }}</h6>
+                <span>{{ session['rol'] | capitalize }}</span>
+            </div>            
+        </div>
+        <div class="navbar-nav w-100">
+            <a href="{{ url_for('dashboard.index') }}" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+            <a href="{{ url_for('dashboard.vista_clientes') }}" class="nav-item nav-link"><i class="fa fa-users me-2"></i>Clientes</a>
+            <a href="{{ url_for('dashboard.vista_propietarios') }}" class="nav-item nav-link"><i class="fa fa-id-card me-2"></i>Propietarios</a>
+            <a href="{{ url_for('dashboard.vista_pequepeques') }}" class="nav-item nav-link"><i class="fa fa-ship me-2"></i>Pequepeques</a>
+            <a href="{{ url_for('dashboard.vista_servicios') }}" class="nav-item nav-link"><i class="fa fa-clipboard-list me-2"></i>Servicios</a>
+            <a href="{{ url_for('dashboard.vista_paquetes') }}" class="nav-item nav-link"><i class="fa fa-box-open me-2"></i>Paquetes</a>
+            <a href="{{ url_for('dashboard.vista_usuarios') }}" class="nav-item nav-link"><i class="fa fa-user-shield me-2"></i>Usuarios</a>
+            <a href="{{ url_for('auth.logout') }}" class="nav-item nav-link text-danger"><i class="fa fa-sign-out-alt me-2"></i>Cerrar sesión</a>
+              
+        </div>
+    </nav>
+</div>
+<!-- Sidebar End -->

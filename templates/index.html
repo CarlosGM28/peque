@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <title>PequePeques Pucallpa &mdash; Navega la Selva</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link href="https://fonts.googleapis.com/css?family=Oswald:400,700|Dancing+Script:400,700|Muli:300,400" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='fonts/icomoon/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.fancybox.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='fonts/flaticon/font/flaticon.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.mb.YTPlayer.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
+
+  <div class="site-wrap">
+
+    <div class="site-mobile-menu site-navbar-target">
+      <div class="site-mobile-menu-header">
+        <div class="site-mobile-menu-close mt-3">
+          <span class="icon-close2 js-menu-toggle"></span>
+        </div>
+      </div>
+      <div class="site-mobile-menu-body"></div>
+    </div>
+
+    {% include 'components-index/menu.html' %}
+    {% include 'components-index/slider.html' %}
+
+    <div class="site-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <img src="{{ url_for('static', filename='images/hero_2.jpg') }}" alt="Pequepeques en Pucallpa" class="img-fluid">
+          </div>
+          <div class="col-md-6">
+            <span class="text-serif text-primary">Sobre Nosotros</span>
+            <h3 class="heading-92913 text-black">Alquiler de Pequepeques en Pucallpa</h3>
+            <p>Explora la majestuosidad del río Ucayali a bordo de nuestros pequepeques. Ofrecemos una experiencia segura, cómoda y auténtica para disfrutar de la selva peruana como nunca antes.</p>
+            <p>Nuestros botes están acondicionados para turismo, transporte y experiencias especiales. Reserva con nosotros y vive la selva desde su corazón.</p>
+            <p><a href="#" class="btn btn-primary py-3 px-4">Reserva Ahora</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 col-lg-4">
+            <div class="service-29283">
+              <span class="wrap-icon-39293">
+                <span class="flaticon-yacht"></span>
+              </span>
+              <h3>Pequepeques Seguros</h3>
+              <p>Contamos con embarcaciones certificadas y equipadas para garantizar tu seguridad durante todo el recorrido.</p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="service-29283">
+              <span class="wrap-icon-39293">
+                <span class="flaticon-shield"></span>
+              </span>
+              <h3>Confianza Garantizada</h3>
+              <p>Somos una empresa pucallpina con años de experiencia brindando servicios de transporte fluvial confiables.</p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="service-29283">
+              <span class="wrap-icon-39293">
+                <span class="flaticon-captain"></span>
+              </span>
+              <h3>Conductores Expertos</h3>
+              <p>Nuestros capitanes están altamente capacitados para operar en rutas fluviales de la Amazonía con profesionalismo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="site-section bg-image overlay"style="background-image: url('{{ url_for('static', filename='images/hero_1.jpg') }}');">
+      <div class="container">
+        <div class="row text-center text-white">
+          <div class="col"><h3>+30</h3><span>Pequepeques Operativos</span></div>
+          <div class="col"><h3>+5000</h3><span>Clientes Felices</span></div>
+          <div class="col"><h3>20</h3><span>Conductores Locales</span></div>
+          <div class="col"><h3>50+</h3><span>Rutas Fluviales</span></div>
+          <div class="col"><h3>100%</h3><span>Seguridad Garantizada</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="site-section bg-light">
+      <div class="container">
+        <div class="row justify-content-center mb-5">
+          <div class="col-md-7 text-center">
+            <span class="text-serif text-primary">Destinos</span>
+            <h3 class="heading-92913 text-black text-center">Rutas Populares</h3>
+          </div>
+        </div>
+        <div class="row">
+          {% for destino in destinos %}
+          <div class="col-md-6 col-lg-4 mb-4">
+            <div class="service-39381">
+              <img src="{{ url_for('static', filename=destino.imagen) }}" alt="{{ destino.nombre }}" class="img-fluid">
+              <div class="p-4">
+                <h3><a href="#"><span class="icon-room mr-1 text-primary"></span> {{ destino.nombre }}</a></h3>
+                <div class="d-flex">
+                  <div class="mr-auto"><span class="icon-date_range"></span> {{ destino.fecha }}</div>
+                  <div class="ml-auto price"><span class="bg-primary">S/ {{ destino.precio }}</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="site-section bg-image overlay"style="background-image: url({{ url_for('static', filename='images/hero_2.jpg') }});">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-7 text-center">
+            <h2 class="text-white">¿Listo para Navegar?</h2>
+            <p class="lead text-white">Contáctanos para agendar tu viaje en pequepeque por Pucallpa.</p>
+            <p class="mb-0"><a href="#" class="btn btn-warning py-3 px-5 text-white">Contáctanos</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-3">
+            <p class="mb-4"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="Pequepeques Pucallpa" class="img-fluid"></p>
+            <p>Descubre la Amazonía desde el río. Alquila pequepeques con seguridad y confianza.</p>  
+            <p><a href="#">Saber más</a></p>
+          </div>
+          <div class="col-lg-3">
+            <h3 class="footer-heading"><span>La Empresa</span></h3>
+            <ul class="list-unstyled">
+                <li><a href="#">Nosotros</a></li>
+                <li><a href="#">Servicios</a></li>
+                <li><a href="#">Conductores</a></li>
+                <li><a href="#">Testimonios</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+              <h3 class="footer-heading"><span>Servicios</span></h3>
+              <ul class="list-unstyled">
+                  <li><a href="#">Turismo fluvial</a></li>
+                  <li><a href="#">Transporte de carga</a></li>
+                  <li><a href="#">Eventos y tours</a></li>
+              </ul>
+          </div>
+          <div class="col-lg-3">
+              <h3 class="footer-heading"><span>Contacto</span></h3>
+              <ul class="list-unstyled">
+                  <li><a href="#">Centro de ayuda</a></li>
+                  <li><a href="#">Soporte</a></li>
+                  <li><a href="#">Ubicación</a></li>
+                  <li><a href="#">Reservas</a></li>
+              </ul>
+          </div>
+        </div>
+        {% include 'components-index/footer.html' %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- loader -->
+  <div id="loader" class="show fullscreen">
+    <svg class="circular" width="48px" height="48px">
+      <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/>
+      <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#ff5e15"/>
+    </svg>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery-migrate-3.0.1.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.stellar.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.countdown.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap-datepicker.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.easing.1.3.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/aos.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.fancybox.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.sticky.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.mb.YTPlayer.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

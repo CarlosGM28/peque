@@ -1,0 +1,212 @@
+{% extends "dashboard/dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid pt-4 px-4">
+  <div class="bg-secondary text-white rounded p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h6 class="mb-0">Paquetes turísticos</h6>
+      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalPaquete">
+        <i class="fas fa-plus"></i> Nuevo Paquete
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table id="tabla-paquetes" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Denominación</th>
+            <th>Precio</th>
+            <th>Tiempo Promedio</th>
+            <th>Paradas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Paquete -->
+<div class="modal fade" id="modalPaquete" tabindex="-1" aria-labelledby="modalPaqueteLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #1e1e2f; color: #ffffff;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="modalPaqueteLabel">Registrar Paquete</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form id="form-paquete">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Denominación</label>
+            <input type="text" name="denominacion" class="form-control bg-dark text-white border-0" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Precio</label>
+            <input type="number" step="0.01" name="precio" class="form-control bg-dark text-white border-0" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tiempo promedio</label>
+            <input type="text" name="tiempo_promedio" class="form-control bg-dark text-white border-0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Paradas</label>
+            <input type="number" name="paradas" class="form-control bg-dark text-white border-0">
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar Paquete -->
+<div class="modal fade" id="modalEditarPaquete" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="form-editar-paquete" style="background-color: #1e1e2f; color: #ffffff;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Editar Paquete</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id">
+        <div class="mb-3">
+          <label class="form-label">Denominación</label>
+          <input type="text" name="denominacion" class="form-control bg-dark text-white border-0" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Precio</label>
+          <input type="number" step="0.01" name="precio" class="form-control bg-dark text-white border-0" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Tiempo promedio</label>
+          <input type="text" name="tiempo_promedio" class="form-control bg-dark text-white border-0">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Paradas</label>
+          <input type="number" name="paradas" class="form-control bg-dark text-white border-0">
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tabla = $('#tabla-paquetes').DataTable({
+      ajax: "/api/paquetes",
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+      },
+      columns: [
+        { data: 'id' },
+        { data: 'denominacion' },
+        { data: 'precio' },
+        { data: 'tiempo_promedio' },
+        { data: 'paradas' },
+        {
+          data: null,
+          render: function (data) {
+            return `
+              <button class='btn btn-sm btn-warning' onclick='editarPaquete(${JSON.stringify(data)})'><i class="fa fa-edit"></i></button>
+              <button class='btn btn-sm btn-danger' onclick='eliminarPaquete(${data.id})'><i class="fa fa-trash"></i></button>
+            `;
+          },
+          orderable: false
+        }
+      ]
+    });
+
+    document.getElementById('form-paquete').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(this).entries());
+
+      fetch("/api/paquetes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          $('#modalPaquete').modal('hide');
+          tabla.ajax.reload();
+          Swal.fire("¡Éxito!", "El paquete fue guardado correctamente.", "success");
+        } else {
+          Swal.fire("Error", res.message || "No se pudo registrar el paquete.", "error");
+        }
+      });
+    });
+
+    document.getElementById('form-editar-paquete').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(this).entries());
+      const id = datos.id;
+
+      fetch(`/api/paquetes/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.message) {
+          $('#modalEditarPaquete').modal('hide');
+          tabla.ajax.reload();
+          Swal.fire("¡Actualizado!", "Paquete actualizado correctamente.", "success");
+        } else {
+          Swal.fire("Error", res.error || "No se pudo actualizar.", "error");
+        }
+      });
+    });
+  });
+
+  function editarPaquete(data) {
+    const form = document.getElementById('form-editar-paquete');
+    for (const key in data) {
+      if (form[key]) form[key].value = data[key];
+    }
+    $('#modalEditarPaquete').modal('show');
+  }
+
+  function eliminarPaquete(id) {
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      const resp = await fetch(`/api/paquetes/${id}`, { method: "DELETE" });
+      const res = await resp.json();
+      if (resp.ok && res.message) {
+        $('#tabla-paquetes').DataTable().ajax.reload();
+        Swal.fire("¡Eliminado!", "Paquete eliminado correctamente.", "success");
+      } else {
+        Swal.fire("Error", res.error || "No se pudo eliminar el paquete.", "error");
+      }
+    }
+  });
+}
+</script>
+{% endblock %}

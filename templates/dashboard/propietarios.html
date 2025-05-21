@@ -1,0 +1,195 @@
+{% extends "dashboard/dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid pt-4 px-4">
+  <div class="bg-secondary text-white rounded p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h6 class="mb-0">Propietarios registrados</h6>
+      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalPropietario">
+        <i class="fas fa-plus"></i> Nuevo Propietario
+      </button>
+    </div>
+    <div class="table-responsive">
+      <table id="tabla-propietarios" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombres</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Registro Propietario -->
+<div class="modal fade" id="modalPropietario" tabindex="-1" aria-labelledby="modalPropietarioLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0" style="background-color: #1e1e2f; color: #ffffff;">
+        <h5 class="modal-title" id="modalPropietarioLabel">Nuevo Propietario</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form id="form-propietario">
+        <div class="modal-body" style="background-color: #1e1e2f; color: #ffffff;">
+          <div class="mb-3">
+            <label for="nombres" class="form-label">Nombres</label>
+            <input type="text" id="nombres" class="form-control bg-dark text-white border-0" name="nombres" required>
+          </div>
+          <div class="mb-3">
+            <label for="dni" class="form-label">DNI</label>
+            <input type="text" id="dni" class="form-control bg-dark text-white border-0" name="dni" required maxlength="8">
+          </div>
+          <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <input type="text" id="telefono" class="form-control bg-dark text-white border-0" name="telefono" maxlength="12">
+          </div>
+        </div>
+        <div class="modal-footer border-0" style="background-color: #1e1e2f;">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar Propietario -->
+<div class="modal fade" id="modalEditarPropietario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #1e1e2f; color: #ffffff;">
+      <form id="form-editar-propietario">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Editar Propietario</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id">
+          <div class="mb-3">
+            <label for="edit-nombres-prop" class="form-label">Nombres</label>
+            <input type="text" id="edit-nombres-prop" class="form-control bg-dark text-white border-0" name="nombres" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit-dni-prop" class="form-label">DNI</label>
+            <input type="text" id="edit-dni-prop" class="form-control bg-dark text-white border-0" name="dni" maxlength="8" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit-telefono-prop" class="form-label">Teléfono</label>
+            <input type="text" id="edit-telefono-prop" class="form-control bg-dark text-white border-0" name="telefono" maxlength="12">
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-primary">Actualizar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tabla = $('#tabla-propietarios').DataTable({
+      ajax: "/api/propietarios",
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+      },
+      columns: [
+        { data: 'id' },
+        { data: 'nombres' },
+        { data: 'dni' },
+        { data: 'telefono' },
+        {
+          data: null,
+          render: function (data) {
+            return `
+              <button class='btn btn-sm btn-warning me-1' onclick='editarPropietario(${JSON.stringify(data)})'><i class="fa fa-edit"></i></button>
+              <button class='btn btn-sm btn-danger' onclick='eliminarPropietario(${data.id})'><i class="fa fa-trash"></i></button>
+            `;
+          },
+          orderable: false
+        }
+      ]
+    });
+
+    document.getElementById("form-propietario").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(this).entries());
+      const resp = await fetch("/api/propietarios", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+      const res = await resp.json();
+      if (resp.ok && res.success) {
+        $('#modalPropietario').modal('hide');
+        tabla.ajax.reload();
+        Swal.fire("¡Éxito!", "Propietario registrado correctamente.", "success");
+      } else {
+        Swal.fire("Error", res.message || "No se pudo registrar el propietario.", "error");
+      }
+    });
+
+    document.getElementById("form-editar-propietario").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(this).entries());
+      const resp = await fetch(`/api/propietarios/${datos.id}`, {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+      const res = await resp.json();
+      if (resp.ok && res.message) {
+        $('#modalEditarPropietario').modal('hide');
+        tabla.ajax.reload();
+        Swal.fire("¡Actualizado!", "Propietario modificado correctamente.", "success");
+      } else {
+        Swal.fire("Error", res.error || "No se pudo actualizar el propietario.", "error");
+      }
+    });
+  });
+
+  function editarPropietario(data) {
+    const form = document.getElementById("form-editar-propietario");
+    for (const key in data) {
+      if (form[key]) form[key].value = data[key];
+    }
+    $('#modalEditarPropietario').modal('show');
+  }
+
+  function eliminarPropietario(id) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const resp = await fetch(`/api/propietarios/${id}`, { method: "DELETE" });
+        const res = await resp.json();
+        if (resp.ok && res.message) {
+          $('#tabla-propietarios').DataTable().ajax.reload();
+          Swal.fire("¡Eliminado!", "Propietario eliminado correctamente.", "success");
+        } else {
+          Swal.fire("Error", res.error || "No se pudo eliminar el propietario.", "error");
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}
